@@ -689,6 +689,12 @@ ARCH_AFLAGS :=
 ARCH_CFLAGS :=
 include arch/$(SRCARCH)/Makefile
 
+GC_FLAGS += -O3 -mcpu=cortex-a53+crypto+crc
+CL_FLAGS += -O3 -mcpu=cortex-a53+crypto+crc
+
+export GC_FLAGS
+export CL_FLAGS
+
 KBUILD_CFLAGS	+= $(call cc-option,-fno-delete-null-pointer-checks,)
 KBUILD_CFLAGS	+= $(call cc-disable-warning,frame-address,)
 KBUILD_CFLAGS	+= $(call cc-disable-warning, format-truncation)
@@ -696,6 +702,17 @@ KBUILD_CFLAGS	+= $(call cc-disable-warning, format-overflow)
 KBUILD_CFLAGS	+= $(call cc-disable-warning, int-in-bool-context)
 KBUILD_CFLAGS	+= $(call cc-disable-warning, address-of-packed-member)
 KBUILD_CFLAGS	+= $(call cc-disable-warning, attribute-alias)
+
+ifeq ($(cc-name),gcc)
+KBUILD_CFLAGS   += $(GC_FLAGS)
+KBUILD_AFLAGS   += $(GC_FLAGS)
+KBUILD_LDFLAGS  += $(GC_FLAGS)
+endif
+ifeq ($(cc-name),clang)
+KBUILD_CFLAGS   += $(CL_FLAGS)
+KBUILD_AFLAGS   += $(CL_FLAGS)
+KBUILD_LDFLAGS  += $(CL_FLAGS)
+endif
 
 ifdef CONFIG_LD_DEAD_CODE_DATA_ELIMINATION
 KBUILD_CFLAGS	+= $(call cc-option,-ffunction-sections,)
