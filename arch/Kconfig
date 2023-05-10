@@ -555,7 +555,6 @@ config ARCH_SUPPORTS_THINLTO
 config THINLTO
 	bool "Use clang ThinLTO (EXPERIMENTAL)"
 	depends on LTO_CLANG && ARCH_SUPPORTS_THINLTO
-	default y
 	help
 	  Use ThinLTO to speed up Link Time Optimization.
 
