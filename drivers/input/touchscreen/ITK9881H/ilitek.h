@@ -651,6 +651,7 @@ struct ilitek_tddi_dev {
 	int (*esd_recover)(void);
 	void (*spi_speed)(bool enable);
 	void (*ges_recover)(void);
+        int double_tap_pressed;
 };
 extern struct ilitek_tddi_dev *idev;
 

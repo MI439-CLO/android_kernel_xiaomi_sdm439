@@ -755,14 +755,10 @@ void ilitek_tddi_report_gesture_mode(u8 *buf, int len)
 {
 	ipio_info("gesture code = 0x%x\n", buf[1]);
 
+	idev->double_tap_pressed = (buf[1] == GESTURE_DOUBLECLICK) ? 1 : 0;
+	sysfs_notify(&idev->i2c->dev.kobj, NULL, "double_tap_pressed");
+
 	switch (buf[1]) {
-	case GESTURE_DOUBLECLICK:
-		ipio_info("Double Click key event\n");
-		input_report_key(idev->input, KEY_GUSTURE_WAKEUP, 1);
-		input_sync(idev->input);
-		input_report_key(idev->input, KEY_GUSTURE_WAKEUP, 0);
-		input_sync(idev->input);
-		break;
 	case GESTURE_LEFT:
 		break;
 	case GESTURE_RIGHT:

@@ -93,6 +93,40 @@ static struct ctl_table_header *dt2w_sysctl_header;
 
 unsigned char g_user_buf[USER_STR_BUFF] = {0};
 
+static inline ssize_t double_tap_pressed_get(struct device *device,
+                               struct device_attribute *attribute,
+                               char *buffer)
+{
+       struct ilitek_tddi_dev *ts = dev_get_drvdata(device);
+       return scnprintf(buffer, PAGE_SIZE, "%i\n", ts->double_tap_pressed);
+}
+
+static DEVICE_ATTR(double_tap_pressed, S_IRUGO,
+                   double_tap_pressed_get, NULL);
+
+static struct attribute *ilitek_attrs[] = {
+      &dev_attr_double_tap_pressed.attr,
+      NULL
+};
+
+static struct attribute_group ilitek_group = {
+  .attrs = ilitek_attrs,
+};
+
+static int ilitek_create_sysfs(struct device *dev)
+{
+    int ret = 0;
+
+    ret = sysfs_create_group(&dev->kobj, &ilitek_group);
+    if (ret) {
+        pr_err("gesture sys node create fail");
+        sysfs_remove_group(&dev->kobj, &ilitek_group);
+        return ret;
+    }
+
+    return 0;
+}
+
 int str2hex(char *str)
 {
 	int strlen, result, intermed, intermedtop;
@@ -2001,6 +2035,8 @@ void ilitek_tddi_node_init(void)
 	}
 
 	netlink_init();
+
+	ilitek_create_sysfs(idev->dev);
 
 	/* DT2W sysctl */
 	dt2w_sysctl_header = register_sysctl_table(dt2w_parent_table);
